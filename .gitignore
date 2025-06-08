@@ -1,6 +1,9 @@
 # Environment variables
 .env
 
+# Frontend test files
+index.html
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
