@@ -46,10 +46,11 @@ class RoadmapCreateSerializer(serializers.ModelSerializer):
         required=False,
         allow_empty=True
     )
+    author = serializers.CharField(source='user.username', read_only=True)
     
     class Meta:
         model = Roadmap
-        fields = ['title', 'description', 'nodes']
+        fields = ['title', 'description', 'author', 'nodes']
         
     def create(self, validated_data):
         nodes_data = validated_data.pop('nodes', [])
