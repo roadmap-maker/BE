@@ -64,6 +64,27 @@ class RoadmapCreateSerializer(serializers.ModelSerializer):
         
         return roadmap
     
+    def update(self, instance, validated_data):
+        nodes_data = validated_data.pop('nodes', None)
+        
+        # Update basic roadmap fields
+        instance = super().update(instance, validated_data)
+        
+        # If nodes data is provided, recreate all nodes
+        if nodes_data is not None:
+            # Delete existing nodes
+            instance.nodes.all().delete()
+            
+            # Create new nodes recursively
+            try:
+                self._create_nodes_recursively(instance, nodes_data, None)
+            except Exception as e:
+                raise serializers.ValidationError({
+                    'nodes': f"Node update failed: {str(e)}"
+                })
+        
+        return instance
+    
     def _create_nodes_recursively(self, roadmap, nodes_data, parent_node):
         """Recursively create nodes and their children"""
         for node_data in nodes_data:
