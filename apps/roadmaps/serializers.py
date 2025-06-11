@@ -17,18 +17,21 @@ class RoadmapNodeSerializer(serializers.ModelSerializer):
 
 class RoadmapListSerializer(serializers.ModelSerializer):
     """목록 조회용 간단한 시리얼라이저 (노드 정보 제외)"""
+    author = serializers.CharField(source='user.username', read_only=True)
+    
     class Meta:
         model = Roadmap
-        fields = ['id', 'title', 'description', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'description', 'author', 'created_at', 'updated_at']
 
 
 class RoadmapSerializer(serializers.ModelSerializer):
     """상세 조회용 시리얼라이저 (노드 정보 포함)"""
     nodes = serializers.SerializerMethodField()
+    author = serializers.CharField(source='user.username', read_only=True)
     
     class Meta:
         model = Roadmap
-        fields = ['id', 'title', 'description', 'created_at', 'updated_at', 'nodes']
+        fields = ['id', 'title', 'description', 'author', 'created_at', 'updated_at', 'nodes']
         
     def get_nodes(self, obj):
         # Only get root nodes (nodes without parent)
