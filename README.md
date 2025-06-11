@@ -77,10 +77,17 @@ source venv/bin/activate
 
 ## 📦 설치 및 실행
 
-### 1. 의존성 설치
+### 1. 의존성 설치 (pkg_resources 에러 방지)
 
 ```bash
+# 1. 먼저 setuptools와 wheel 업그레이드
+pip install --upgrade pip setuptools wheel
+
+# 2. 의존성 설치
 pip install -r requirements.txt
+
+# 3. 개발 모드로 프로젝트 설치 (권장)
+pip install -e .
 ```
 
 ### 2. 환경변수 설정 (선택사항)
@@ -192,39 +199,52 @@ const toggleBookmark = async (roadmapId, accessToken) => {
 };
 ```
 
-## 🔧 문제 해결
+## 🛠️ 문제 해결
 
-### 자주 발생하는 문제들
+### 일반적인 문제들
 
-#### 1. 포트 충돌
-```bash
-# 다른 포트로 실행
-python manage.py runserver 8001
-```
+1. **pkg_resources ModuleImportError**
+   ```bash
+   # setuptools 업그레이드
+   pip install --upgrade setuptools wheel
+   
+   # 또는 가상환경 재생성
+   deactivate
+   rmdir /s venv  # Windows
+   python -m venv venv
+   venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-#### 2. 마이그레이션 오류
-```bash
-# 마이그레이션 초기화
-python manage.py migrate --run-syncdb
-```
+2. **포트 8000이 이미 사용 중인 경우**
+   ```bash
+   # 다른 포트 사용
+   python manage.py runserver 8001
+   ```
 
-#### 3. CORS 오류
-프론트엔드 주소가 `CORS_ALLOWED_ORIGINS`에 포함되어 있는지 확인하세요.
+3. **CORS 에러가 발생하는 경우**
+   - `settings.py`에서 `CORS_ALLOWED_ORIGINS` 확인
+   - 프론트엔드 주소가 올바르게 설정되어 있는지 확인
 
-#### 4. 가상환경 비활성화
-```bash
-deactivate
-```
+4. **JWT 토큰 관련 에러**
+   - `.env` 파일에 `JWT_SECRET_KEY` 설정 확인
+   - 토큰 만료 시간 확인
 
-#### 5. 패키지 설치 오류
-```bash
-# pip 업그레이드
-python -m pip install --upgrade pip
+5. **데이터베이스 관련 에러**
+   ```bash
+   # 마이그레이션 재실행
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
 
-# 캐시 클리어 후 재설치
-pip cache purge
-pip install -r requirements.txt
-```
+6. **패키지 의존성 문제**
+   ```bash
+   # 개발 모드로 설치 (권장)
+   pip install -e .
+   
+   # 또는 requirements.txt 재설치
+   pip install -r requirements.txt --force-reinstall
+   ```
 
 ### 로그 확인
 

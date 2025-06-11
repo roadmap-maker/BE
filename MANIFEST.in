@@ -1,0 +1,11 @@
+include README.md
+include requirements.txt
+include manage.py
+include .env.example
+recursive-include apps *.py
+recursive-include roadmap_project *.py
+recursive-include apps/*/migrations *.py
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+recursive-exclude * .git*

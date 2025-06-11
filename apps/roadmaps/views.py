@@ -13,10 +13,15 @@ from .serializers import (
 
 
 class RoadmapListCreateView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
     
     def get_queryset(self):
-        return Roadmap.objects.filter(user=self.request.user)
+        if self.request.method == 'POST' or (hasattr(self.request, 'user') and self.request.user.is_authenticated):
+            return Roadmap.objects.filter(user=self.request.user)
+        return Roadmap.objects.all()
     
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -25,9 +30,14 @@ class RoadmapListCreateView(generics.ListCreateAPIView):
 
 
 class RoadmapDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
     
     def get_queryset(self):
+        if self.request.method == 'GET':
+            return Roadmap.objects.all()
         return Roadmap.objects.filter(user=self.request.user)
     
     def get_serializer_class(self):
